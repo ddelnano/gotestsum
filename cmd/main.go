@@ -237,7 +237,8 @@ func run(opts *options) error {
 	if exitErr == nil || opts.rerunFailsMaxAttempts == 0 {
 		return finishRun(opts, exec, exitErr)
 	}
-	if err := hasErrors(exitErr, exec); err != nil {
+	fmt.Printf("Executor has %#v", exec.FullPackages())
+	if err := hasErrors(exitErr, exec, true); err != nil {
 		return finishRun(opts, exec, err)
 	}
 

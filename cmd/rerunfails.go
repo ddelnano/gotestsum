@@ -81,7 +81,7 @@ func rerunFailed(ctx context.Context, opts *options, scanConfig testjson.ScanCon
 			if exitErr != nil {
 				nextRec.lastErr = exitErr
 			}
-			if err := hasErrors(exitErr, scanConfig.Execution); err != nil {
+			if err := hasErrors(exitErr, scanConfig.Execution, true); err != nil {
 				return err
 			}
 		}
@@ -93,7 +93,7 @@ func rerunFailed(ctx context.Context, opts *options, scanConfig testjson.ScanCon
 // startGoTestFn is a shim for testing
 var startGoTestFn = startGoTest
 
-func hasErrors(err error, exec *testjson.Execution) error {
+func hasErrors(err error, exec *testjson.Execution, ignorePanic bool) error {
 	switch {
 	case len(exec.Errors()) > 0:
 		return fmt.Errorf("rerun aborted because previous run had errors")
@@ -101,6 +101,9 @@ func hasErrors(err error, exec *testjson.Execution) error {
 	case ExitCodeWithDefault(err) > 1:
 		return fmt.Errorf("unexpected go test exit code: %v", err)
 	case exec.HasPanic():
+		if ignorePanic {
+			return nil
+		}
 		return fmt.Errorf("rerun aborted because previous run had a suspected panic and some test may not have run")
 	default:
 		return nil

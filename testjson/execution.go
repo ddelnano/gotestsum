@@ -562,6 +562,21 @@ func (e *Execution) HasPanic() bool {
 	return false
 }
 
+func (e *Execution) FullPackages() []Package {
+	ps := []Package{}
+	for _, p := range e.packages {
+		ps = append(ps, *p)
+	}
+	return ps
+}
+
+func (e *Execution) PrintPackages() {
+	fmt.Println("Print packages")
+	for k, p := range e.packages {
+		fmt.Printf("Package '%s' has content %v\n", k, *p)
+	}
+}
+
 func (e *Execution) end() []TestEvent {
 	e.done = true
 	var result []TestEvent // nolint: prealloc
